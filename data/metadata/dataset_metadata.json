@@ -1,0 +1,27 @@
+{
+  "dataset_name": "Sentinel-2 L2A Muscat Urban Study",
+  "study_area": "Muscat, Oman",
+  "bbox_wgs84": [58.35, 23.50, 58.65, 23.65],
+  "target_crs": "EPSG:32640",
+  "mgrs_tile": "40RGU",
+  "source": "Microsoft Planetary Computer STAC",
+  "collection": "sentinel-2-l2a",
+  "satellite": "Sentinel-2A/2B",
+  "resolution_m": 10,
+  "bands": ["B02", "B03", "B04", "B08", "B11"],
+  "temporal_composites": {
+    "t1": {
+      "label": "2020 dry season",
+      "date_range": "2020-10-01/2021-02-28"
+    },
+    "t2": {
+      "label": "2025 dry season",
+      "date_range": "2025-10-01/2026-02-28"
+    }
+  },
+  "sample_data": {
+    "description": "Synthetic 200x200 px GeoTIFFs with known urban change patch for CI/testing",
+    "files": ["data/samples/sample_t1.tif", "data/samples/sample_t2.tif"]
+  },
+  "notes": "Full-resolution composites are downloaded via scripts/download_sentinel2.py. Sample rasters are used for offline development and automated tests."
+}
