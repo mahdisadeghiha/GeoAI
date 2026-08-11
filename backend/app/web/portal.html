@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GeoAI API Portal</title>
+    <link rel="stylesheet" href="/static/portal.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand">
+          <div class="mark" aria-hidden="true"><span></span><span></span></div>
+          <div>
+            <h1>GeoAI API Portal</h1>
+            <p>Urban Satellite Change Detection · Backend</p>
+          </div>
+        </div>
+        <div class="top-actions">
+          <a class="btn ghost" href="/docs">Swagger Docs</a>
+          <a class="btn ghost" href="/redoc">ReDoc</a>
+          <a class="btn primary" href="http://127.0.0.1:5173" target="_blank" rel="noreferrer">Open Dashboard</a>
+        </div>
+      </header>
+
+      <section class="hero">
+        <div class="card">
+          <p class="eyebrow">Research API Console</p>
+          <h2>پرتال بک‌اند تشخیص تغییر شهری</h2>
+          <p class="lead">
+            این صفحه ورودی زیبا و خوانا به سرویس FastAPI است: وضعیت سلامت، میانبر endpointها، و لینک به
+            مستندات تعاملی با تم اختصاصی GeoAI.
+          </p>
+        </div>
+        <div class="card">
+          <p class="eyebrow">Live Status</p>
+          <div class="status-grid" id="status-grid">
+            <div class="status-row">
+              <span>API</span>
+              <strong class="pill warn"><i class="dot"></i> Checking…</strong>
+            </div>
+            <div class="status-row">
+              <span>Database</span>
+              <strong id="db-pill" class="pill warn"><i class="dot"></i> —</strong>
+            </div>
+            <div class="status-row">
+              <span>Version</span>
+              <strong id="version">—</strong>
+            </div>
+            <div class="status-row">
+              <span>Study areas</span>
+              <strong id="areas-count">—</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="metrics">
+        <div class="card metric"><span>Stack</span><strong>FastAPI</strong></div>
+        <div class="card metric"><span>Imagery</span><strong>Sentinel-2</strong></div>
+        <div class="card metric"><span>Methods</span><strong>Baseline + CVA</strong></div>
+        <div class="card metric"><span>Outputs</span><strong>GeoJSON + PNG</strong></div>
+      </section>
+
+      <div class="section-title">
+        <h3>میانبر Endpointها</h3>
+        <p>کلیک برای باز کردن در Swagger یا تست سریع</p>
+      </div>
+      <section class="endpoints">
+        <a class="card endpoint" href="/docs#/health/health_check_api_health_get">
+          <div><span class="method get">GET</span><span class="path">/api/health</span></div>
+          <p>سلامت سرویس و وضعیت اتصال دیتابیس</p>
+        </a>
+        <a class="card endpoint" href="/docs#/study-area/list_study_areas_api_study_areas_get">
+          <div><span class="method get">GET</span><span class="path">/api/study-areas</span></div>
+          <p>لیست محدوده‌های مطالعه عمان و سال‌های موجود</p>
+        </a>
+        <a class="card endpoint" href="/docs#/analysis/analyze_api_analyze_post">
+          <div><span class="method post">POST</span><span class="path">/api/analyze</span></div>
+          <p>اجرای کامل پایپ‌لاین تشخیص تغییر</p>
+        </a>
+        <a class="card endpoint" href="/docs#/analysis/get_changes_api_changes_get">
+          <div><span class="method get">GET</span><span class="path">/api/changes</span></div>
+          <p>GeoJSON مناطق تغییر برای یک run</p>
+        </a>
+        <a class="card endpoint" href="/docs#/ndvi/get_ndvi_api_ndvi_get">
+          <div><span class="method get">GET</span><span class="path">/api/ndvi</span></div>
+          <p>خلاصه NDVI و لینک رسترها</p>
+        </a>
+        <a class="card endpoint" href="/docs#/rasters/get_raster_api_rasters__run_id___filename__get">
+          <div><span class="method get">GET</span><span class="path">/api/rasters/{run_id}/{file}</span></div>
+          <p>دانلود خروجی GeoTIFF یا PNG overlay</p>
+        </a>
+      </section>
+
+      <section class="grid-2">
+        <div class="card">
+          <p class="eyebrow">Quick analyze</p>
+          <h3 style="margin: 0; font-family: var(--display); font-size: 1.05rem">نمونه درخواست</h3>
+          <pre>curl -X POST "http://127.0.0.1:8000/api/analyze" ^
+  -F "use_samples=true" ^
+  -F "method=baseline" ^
+  -F "study_area_id=muscat" ^
+  -F "year_t1=2020" ^
+  -F "year_t2=2025"</pre>
+        </div>
+        <div class="card">
+          <p class="eyebrow">Resources</p>
+          <h3 style="margin: 0; font-family: var(--display); font-size: 1.05rem">لینک‌های مفید</h3>
+          <ul class="list">
+            <li><span>Interactive OpenAPI</span><a href="/docs">/docs</a></li>
+            <li><span>ReDoc</span><a href="/redoc">/redoc</a></li>
+            <li><span>OpenAPI JSON</span><a href="/openapi.json">/openapi.json</a></li>
+            <li><span>HTML Project Docs</span><code>docs/site</code></li>
+          </ul>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <div>GeoAI Urban Change Detection · Research prototype API</div>
+        <div id="clock">—</div>
+      </footer>
+    </div>
+    <script src="/static/portal.js"></script>
+  </body>
+</html>

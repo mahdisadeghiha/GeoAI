@@ -1,13 +1,61 @@
 {
-  "dataset_name": "Sentinel-2 L2A Muscat Urban Study",
-  "study_area": "Muscat, Oman",
-  "bbox_wgs84": [58.35, 23.50, 58.65, 23.65],
-  "target_crs": "EPSG:32640",
-  "mgrs_tile": "40RGU",
+  "dataset_name": "Sentinel-2 L2A Oman GeoAI Study",
+  "study_areas": [
+    {
+      "id": "oman",
+      "name": "Oman (National)",
+      "bbox_wgs84": [52.0, 16.6, 59.9, 26.5],
+      "target_crs": "EPSG:4326",
+      "resolution_m": 500,
+      "files": ["data/raw/oman_2020.tif", "data/raw/oman_2025.tif"]
+    },
+    {
+      "id": "muscat",
+      "name": "Muscat, Oman",
+      "bbox_wgs84": [58.20, 23.45, 58.75, 23.75],
+      "target_crs": "EPSG:32640",
+      "resolution_m": 20,
+      "files": ["data/raw/muscat_2020.tif", "data/raw/muscat_2025.tif"]
+    },
+    {
+      "id": "sohar",
+      "name": "Sohar, Oman",
+      "bbox_wgs84": [56.55, 24.20, 56.95, 24.55],
+      "target_crs": "EPSG:32640",
+      "resolution_m": 20
+    },
+    {
+      "id": "salalah",
+      "name": "Salalah, Oman",
+      "bbox_wgs84": [53.90, 16.90, 54.30, 17.15],
+      "target_crs": "EPSG:32640",
+      "resolution_m": 20
+    },
+    {
+      "id": "nizwa",
+      "name": "Nizwa, Oman",
+      "bbox_wgs84": [57.40, 22.85, 57.70, 23.05],
+      "target_crs": "EPSG:32640",
+      "resolution_m": 20
+    },
+    {
+      "id": "duqm",
+      "name": "Duqm, Oman",
+      "bbox_wgs84": [57.45, 19.50, 57.85, 19.85],
+      "target_crs": "EPSG:32640",
+      "resolution_m": 20
+    },
+    {
+      "id": "sur",
+      "name": "Sur, Oman",
+      "bbox_wgs84": [59.40, 22.45, 59.65, 22.70],
+      "target_crs": "EPSG:32640",
+      "resolution_m": 20
+    }
+  ],
   "source": "Microsoft Planetary Computer STAC",
   "collection": "sentinel-2-l2a",
   "satellite": "Sentinel-2A/2B",
-  "resolution_m": 10,
   "bands": ["B02", "B03", "B04", "B08", "B11"],
   "temporal_composites": {
     "t1": {
@@ -20,8 +68,9 @@
     }
   },
   "sample_data": {
-    "description": "Synthetic 200x200 px GeoTIFFs with known urban change patch for CI/testing",
+    "description": "Synthetic Muscat GeoTIFFs with known urban change patches for CI/testing",
     "files": ["data/samples/sample_t1.tif", "data/samples/sample_t2.tif"]
   },
-  "notes": "Full-resolution composites are downloaded via scripts/download_sentinel2.py. Sample rasters are used for offline development and automated tests."
+  "download_script": "scripts/download_oman.py",
+  "notes": "National mosaics use ~500 m resolution for practical file size. City AOIs use 20 m. Run: python scripts/download_oman.py --regions oman muscat sohar salalah nizwa duqm sur --years 2020 2025"
 }

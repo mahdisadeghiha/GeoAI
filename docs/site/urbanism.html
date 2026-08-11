@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>شهرسازی و سنجش از دور — GeoAI Docs</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="index.html">
+          <div class="brand-mark" aria-hidden="true"></div>
+          <div>
+            <strong>GeoAI Docs</strong>
+            <span>Urban Science</span>
+          </div>
+        </a>
+        <nav class="nav" aria-label="اصلی">
+          <a href="index.html">معرفی</a>
+          <a href="urbanism.html">شهرسازی</a>
+          <a href="technology.html">فنی</a>
+          <a href="pipeline.html">پایپ‌لاین</a>
+          <a href="methods.html">روش‌ها</a>
+          <a href="guide.html">راهنما و API</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <p class="eyebrow">Urban Planning × Remote Sensing</p>
+      <h1>نگاه شهرسازی به تغییر پوشش زمین در عمان</h1>
+      <p class="lead">
+        رشد کریدورهای شهری، فشار بر فضای سبز، و توسعه بنادر و مناطق ویژه اقتصادی در عمان، نیازمند ابزارهای
+        پایش مکانی سریع و قابل‌تکرار است. این صفحه معنای شهرسازیِ خروجی‌های GeoAI را توضیح می‌دهد.
+      </p>
+    </section>
+
+    <main class="main">
+      <section class="section">
+        <div class="grid-2">
+          <article class="panel">
+            <h3>چرا مسقط و عمان؟</h3>
+            <p>
+              مسقط نمونه کلاسیک رشد شهری ساحلی در اقلیم خشک است: گسترش ساخته‌شده، پروژه‌های زیربنایی، و
+              لکه‌های پوشش گیاهی آبیاری‌شده در بستر بیابانی. مقایسه فصل خشک ۲۰۲۰ و ۲۰۲۵ نویز فصلی را کم می‌کند
+              و سیگنال تغییر بلندمدت‌تر را برجسته می‌سازد.
+            </p>
+          </article>
+          <article class="panel">
+            <h3>سؤال برنامه‌ریز</h3>
+            <p>
+              کجا ساخته‌شده جایگزین پوشش گیاهی شده؟ کدام لکه‌ها بیشترین شدت تغییر را دارند؟ آیا رشد در
+              لبه‌های شهری (urban fringe) متراکم‌تر است یا در هسته موجود؟
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>مفاهیم کلیدی برای شهرسازی</h2>
+        </div>
+        <div class="grid-3">
+          <article class="panel">
+            <div class="icon">1</div>
+            <h3>Urban Growth</h3>
+            <p class="muted">
+              افزایش سطح ساخته‌شده در زمان. در این پروژه با پروکسی NDBI و ماسک تغییر تقریبی اندازه‌گیری می‌شود.
+            </p>
+          </article>
+          <article class="panel">
+            <div class="icon">2</div>
+            <h3>Vegetation Loss / Gain</h3>
+            <p class="muted">
+              کاهش یا افزایش میانگین NDVI. در اقلیم خشک، پوشش سبز اغلب به آبیاری و فضای باز شهری وابسته است.
+            </p>
+          </article>
+          <article class="panel">
+            <div class="icon">3</div>
+            <h3>Change Hotspots</h3>
+            <p class="muted">
+              پلی‌گان‌های تغییر با مساحت و امتیاز شدت؛ ورودی مناسب برای اولویت‌بندی بازدید میدانی یا سیاست‌گذاری.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>محدوده‌های مطالعاتی در داشبورد</h2>
+          <p>سیستم چند AOI شهری عمان را پشتیبانی می‌کند تا تحلیل از مقیاس ملی تا محلی ممکن شود.</p>
+        </div>
+        <div class="panel" style="overflow-x: auto">
+          <table>
+            <thead>
+              <tr>
+                <th>منطقه</th>
+                <th>نقش شهرسازی</th>
+                <th>سیگنال مورد انتظار</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Muscat</td>
+                <td>کریدور رشد پایتخت و لبه‌های شهری</td>
+                <td>گسترش ساخته‌شده، تغییر فضای سبز</td>
+              </tr>
+              <tr>
+                <td>Sohar</td>
+                <td>بندر و منطقه صنعتی شمال</td>
+                <td>توسعه زیرساخت و تغییر پوشش زمین</td>
+              </tr>
+              <tr>
+                <td>Salalah</td>
+                <td>دشت ساحلی ظفار</td>
+                <td>تغییر فصلی/شهری متفاوت از شمال</td>
+              </tr>
+              <tr>
+                <td>Nizwa</td>
+                <td>مرکز داخلی و حاشیه شهری</td>
+                <td>رشد آرام‌تر، لکه‌های محلی</td>
+              </tr>
+              <tr>
+                <td>Duqm</td>
+                <td>منطقه ویژه اقتصادی و بندر</td>
+                <td>تغییرات بزرگ‌مقیاس پروژه‌محور</td>
+              </tr>
+              <tr>
+                <td>Sur</td>
+                <td>شهر ساحلی شرق</td>
+                <td>تغییرات محدودتر ساحلی</td>
+              </tr>
+              <tr>
+                <td>Oman (National)</td>
+                <td>غربالگری منطقه‌ای</td>
+                <td>نمای کلی روندها در مقیاس درشت‌تر</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>از داده تا تصمیم (چارچوب تحلیلی)</h2>
+        </div>
+        <div class="timeline">
+          <div class="timeline-item panel">
+            <h3>۱. مشاهده</h3>
+            <p class="muted">مقایسه دو تصویر و دیدن لکه‌های تغییر روی نقشه.</p>
+          </div>
+          <div class="timeline-item panel">
+            <h3>۲. اندازه‌گیری</h3>
+            <p class="muted">مساحت تغییر، درصد تغییر، Δ پوشش گیاهی و Δ ساخته‌شده.</p>
+          </div>
+          <div class="timeline-item panel">
+            <h3>۳. تفسیر شهرسازی</h3>
+            <p class="muted">
+              آیا تغییر با طرح‌های توسعه، لبه‌های شهری یا پروژه‌های زیربنایی هم‌خوان است؟
+            </p>
+          </div>
+          <div class="timeline-item panel">
+            <h3>۴. اعتبارسنجی</h3>
+            <p class="muted">بازدید میدانی، مقایسه با نقشه‌های کاربری زمین، و croud-sourcing محلی.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="callout">
+          <h3>نکته روش‌شناختی</h3>
+          <p>
+            در مناطق خشک، NDVI پایین است و تغییرات کوچک می‌توانند از نظر نسبی بزرگ به‌نظر برسند.
+            تفسیر باید همراه با بافت اقلیمی، فصل تصویربرداری، و شواهد کمکی (مثل NDBI و بازرسی بصری RGB) باشد.
+          </p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="cta-row">
+          <a class="btn primary" href="methods.html">ادامه: شاخص‌ها و روش‌ها</a>
+          <a class="btn ghost" href="pipeline.html">خط لوله داده</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div>GeoAI Docs · شهرسازی و سنجش از دور</div>
+        <div><a href="index.html">بازگشت به معرفی</a></div>
+      </div>
+    </footer>
+    <script src="assets/nav.js"></script>
+  </body>
+</html>

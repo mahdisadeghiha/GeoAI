@@ -18,10 +18,12 @@ from app.core.config import Settings, get_settings
 from app.models import AnalysisRun, ChangeRegion, StudyArea
 from app.services.change_detection.baseline import detect_changes_baseline
 from app.services.change_detection.cva import detect_changes_cva
+from app.services.metrics import build_extended_metrics
 from app.services.ndvi.ndvi_service import analyze_ndvi, save_ndvi_outputs
 from app.services.preprocessing.pipeline import PreprocessingPipeline
 from app.services.spatial_analysis.polygonize import polygonize_changes
-from app.utils.raster import RasterData, RasterLoader, pixel_area_km2
+from app.utils.preview_png import save_change_mask_png, save_ndvi_diff_png, save_rgb_png
+from app.utils.raster import RasterData, RasterLoader
 from app.utils.run_store import save_run_artifacts
 
 logger = logging.getLogger(__name__)
@@ -39,6 +41,8 @@ class AnalysisResult:
     outputs: dict
     geojson: dict
     statistics: dict
+    aoi_bbox_wgs84: tuple[float, float, float, float] | None = None
+    aoi_note: str | None = None
 
 
 class AnalysisService:
@@ -52,20 +56,30 @@ class AnalysisService:
         path_t2: str | Path,
         method: str = "baseline",
         run_id: uuid.UUID | None = None,
+        aoi_bbox_wgs84: tuple[float, float, float, float] | None = None,
+        study_bbox_wgs84: tuple[float, float, float, float] | None = None,
+        year_t1: int | None = None,
+        year_t2: int | None = None,
     ) -> AnalysisResult:
         run_id = run_id or uuid.uuid4()
         output_dir = self.settings.processed_data_dir / str(run_id)
         output_dir.mkdir(parents=True, exist_ok=True)
 
         logger.info("Starting analysis run %s", run_id)
-        preprocessed = self.preprocessor.run(path_t1, path_t2)
+        preprocessed = self.preprocessor.run(
+            path_t1,
+            path_t2,
+            aoi_bbox_wgs84=aoi_bbox_wgs84,
+            study_bbox_wgs84=study_bbox_wgs84,
+        )
         raster_t1 = preprocessed.raster_t1
         raster_t2 = preprocessed.raster_t2
         valid_mask = preprocessed.valid_mask
 
-        red_idx = PreprocessingPipeline.get_band_index(raster_t1.band_names, "B04", 3)
-        nir_idx = PreprocessingPipeline.get_band_index(raster_t1.band_names, "B08", 4)
-        swir_idx = PreprocessingPipeline.get_band_index(raster_t1.band_names, "B11", 5)
+        red_idx = PreprocessingPipeline.get_band_index(raster_t1.band_names, "B04", 2)
+        green_idx = PreprocessingPipeline.get_band_index(raster_t1.band_names, "B03", 1)
+        nir_idx = PreprocessingPipeline.get_band_index(raster_t1.band_names, "B08", 3)
+        swir_idx = PreprocessingPipeline.get_band_index(raster_t1.band_names, "B11", 4)
 
         ndvi_result = analyze_ndvi(raster_t1, raster_t2, valid_mask, red_idx, nir_idx, self.settings)
         ndvi_paths = save_ndvi_outputs(ndvi_result, output_dir)
@@ -93,13 +107,33 @@ class AnalysisService:
         geojson_path = output_dir / "change_regions.geojson"
         geojson_path.write_text(json.dumps(spatial.geojson), encoding="utf-8")
 
-        pixel_km2 = pixel_area_km2(raster_t1.transform)
-        study_area_km2 = valid_mask.sum() * pixel_km2
-        changed_area_km2 = (change_result.change_mask.array.astype(bool) & valid_mask).sum() * pixel_km2
-        change_percentage = (changed_area_km2 / study_area_km2 * 100.0) if study_area_km2 > 0 else 0.0
-
         rgb_t1 = self._save_rgb(raster_t1, output_dir / "rgb_t1.tif")
         rgb_t2 = self._save_rgb(raster_t2, output_dir / "rgb_t2.tif")
+
+        # Leaflet ImageOverlay needs PNG (browsers cannot render GeoTIFF)
+        rgb_arr_t1 = raster_t1.array[:3] if raster_t1.array.ndim == 3 else raster_t1.array
+        rgb_arr_t2 = raster_t2.array[:3] if raster_t2.array.ndim == 3 else raster_t2.array
+        # Prefer true-color order B04,B03,B02 when available
+        if raster_t1.array.shape[0] >= 3:
+            rgb_arr_t1 = np.stack(
+                [
+                    raster_t1.array[red_idx],
+                    raster_t1.array[green_idx],
+                    raster_t1.array[PreprocessingPipeline.get_band_index(raster_t1.band_names, "B02", 0)],
+                ]
+            )
+            rgb_arr_t2 = np.stack(
+                [
+                    raster_t2.array[red_idx],
+                    raster_t2.array[green_idx],
+                    raster_t2.array[PreprocessingPipeline.get_band_index(raster_t2.band_names, "B02", 0)],
+                ]
+            )
+
+        rgb_t1_png = save_rgb_png(rgb_arr_t1, output_dir / "rgb_t1.png")
+        rgb_t2_png = save_rgb_png(rgb_arr_t2, output_dir / "rgb_t2.png")
+        change_mask_png = save_change_mask_png(change_result.change_mask.array, output_dir / "change_mask.png")
+        ndvi_diff_png = save_ndvi_diff_png(ndvi_result.ndvi_diff.array, output_dir / "ndvi_diff.png")
 
         outputs = {
             "change_mask": str(change_mask_path),
@@ -111,17 +145,42 @@ class AnalysisService:
             "rgb_t2": str(rgb_t2),
             "change_geojson": str(geojson_path),
             "method": change_result.method,
+            # Browser-ready map overlays
+            "rgb_t1_png": str(rgb_t1_png),
+            "rgb_t2_png": str(rgb_t2_png),
+            "change_mask_png": str(change_mask_png),
+            "ndvi_diff_png": str(ndvi_diff_png),
         }
 
+        metrics = build_extended_metrics(
+            raster_t1=raster_t1,
+            raster_t2=raster_t2,
+            valid_mask=valid_mask,
+            change_mask=change_result.change_mask.array,
+            intensity=change_result.change_intensity.array,
+            ndvi_t1=ndvi_result.ndvi_t1.array,
+            ndvi_t2=ndvi_result.ndvi_t2.array,
+            spatial=spatial,
+            red_idx=red_idx,
+            nir_idx=nir_idx,
+            swir_idx=swir_idx,
+            green_idx=green_idx,
+            method=change_result.method,
+            year_t1=year_t1,
+            year_t2=year_t2,
+            eps=self.settings.ndvi_eps,
+        )
+
         statistics = {
-            "study_area_km2": round(study_area_km2, 4),
-            "changed_area_km2": round(changed_area_km2, 4),
-            "change_percentage": round(change_percentage, 2),
-            "vegetation_change_percentage": round(ndvi_result.vegetation_change_percentage, 2),
-            "built_up_change_percentage": round(change_result.built_up_change_percentage, 2),
-            "num_change_regions": spatial.num_regions,
-            "ndvi_t1_mean": round(ndvi_result.ndvi_t1_mean, 4),
-            "ndvi_t2_mean": round(ndvi_result.ndvi_t2_mean, 4),
+            "study_area_km2": metrics["extent"]["study_area_km2"],
+            "changed_area_km2": metrics["extent"]["changed_area_km2"],
+            "change_percentage": metrics["extent"]["change_percentage"],
+            "vegetation_change_percentage": metrics["change_summary"]["vegetation_change_percentage"],
+            "built_up_change_percentage": metrics["change_summary"]["built_up_change_percentage"],
+            "num_change_regions": metrics["change_summary"]["num_change_regions"],
+            "ndvi_t1_mean": metrics["ndvi"]["t1"]["mean"],
+            "ndvi_t2_mean": metrics["ndvi"]["t2"]["mean"],
+            "metrics": metrics,
         }
 
         save_run_artifacts(run_id, statistics, outputs, spatial.geojson)
@@ -137,6 +196,8 @@ class AnalysisService:
             outputs=outputs,
             geojson=spatial.geojson,
             statistics=statistics,
+            aoi_bbox_wgs84=preprocessed.aoi_bbox_wgs84,
+            aoi_note=preprocessed.aoi_note,
         )
 
     def _save_rgb(self, raster: RasterData, path: Path) -> Path:

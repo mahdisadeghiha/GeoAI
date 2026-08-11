@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>خط لوله داده — GeoAI Docs</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="index.html">
+          <div class="brand-mark" aria-hidden="true"></div>
+          <div>
+            <strong>GeoAI Docs</strong>
+            <span>Data Pipeline</span>
+          </div>
+        </a>
+        <nav class="nav" aria-label="اصلی">
+          <a href="index.html">معرفی</a>
+          <a href="urbanism.html">شهرسازی</a>
+          <a href="technology.html">فنی</a>
+          <a href="pipeline.html">پایپ‌لاین</a>
+          <a href="methods.html">روش‌ها</a>
+          <a href="guide.html">راهنما و API</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <p class="eyebrow">From GeoTIFF to Intelligence</p>
+      <h1>خط لوله پردازش داده</h1>
+      <p class="lead">
+        هر اجرای تحلیل یک مسیر مشخص را طی می‌کند: اعتبارسنجی ورودی، هم‌ترازسازی زمانی-مکانی، محاسبه شاخص‌ها،
+        تشخیص تغییر، و تبدیل به لایه‌های قابل‌نمایش و آمار.
+      </p>
+    </section>
+
+    <main class="main">
+      <section class="section">
+        <div class="panel">
+          <div class="flow">
+            <span class="chip">T1/T2 GeoTIFF</span><span class="arrow">→</span>
+            <span class="chip">Validate</span><span class="arrow">→</span>
+            <span class="chip">CRS / Reproject</span><span class="arrow">→</span>
+            <span class="chip">Align / Crop</span><span class="arrow">→</span>
+            <span class="chip">NoData</span><span class="arrow">→</span>
+            <span class="chip">NDVI + Change</span><span class="arrow">→</span>
+            <span class="chip">Polygonize</span><span class="arrow">→</span>
+            <span class="chip">Stats + Map PNG</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>مراحل گام‌به‌گام</h2>
+        </div>
+        <div class="grid-2">
+          <article class="step">
+            <div class="num">۱</div>
+            <h3>Validation</h3>
+            <p class="muted">وجود فایل، CRS، transform و حداقل تعداد باند بررسی می‌شود.</p>
+          </article>
+          <article class="step">
+            <div class="num">۲</div>
+            <h3>CRS Check &amp; Reproject</h3>
+            <p class="muted">هر دو تصویر به CRS هدف (مثلاً EPSG:32640 برای مسقط) منتقل می‌شوند.</p>
+          </article>
+          <article class="step">
+            <div class="num">۳</div>
+            <h3>Alignment</h3>
+            <p class="muted">شبکه مشترک با رزولوشن X/Y مناسب ساخته می‌شود تا پیکسل‌ها روی هم بیفتند.</p>
+          </article>
+          <article class="step">
+            <div class="num">۴</div>
+            <h3>AOI Crop</h3>
+            <p class="muted">اگر کاربر AOI بکشد، رستر به همان قاب برش می‌خورد؛ در غیر این صورت کل تصویر پردازش می‌شود.</p>
+          </article>
+          <article class="step">
+            <div class="num">۵</div>
+            <h3>NoData Mask</h3>
+            <p class="muted">پیکسل‌های نامعتبر حذف می‌شوند تا آمار فقط روی داده معتبر محاسبه شود.</p>
+          </article>
+          <article class="step">
+            <div class="num">۶</div>
+            <h3>Indices &amp; Detection</h3>
+            <p class="muted">NDVI/NDBI و ماسک تغییر ساخته می‌شود (baseline یا CVA).</p>
+          </article>
+          <article class="step">
+            <div class="num">۷</div>
+            <h3>Spatial Analysis</h3>
+            <p class="muted">Connected components → polygonize → GeoJSON با مساحت و امتیاز.</p>
+          </article>
+          <article class="step">
+            <div class="num">۸</div>
+            <h3>Preview Export</h3>
+            <p class="muted">PNGهای RGB، NDVI diff و change mask برای Leaflet تولید می‌شوند.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>ورودی‌ها و خروجی‌ها</h2>
+        </div>
+        <div class="grid-2">
+          <article class="panel">
+            <h3>ورودی</h3>
+            <ul>
+              <li>جفت GeoTIFF چندباندی (T1 و T2)</li>
+              <li>یا نمونه‌های <code>data/samples/</code></li>
+              <li>سال‌ها، شناسه محدوده، AOI اختیاری</li>
+              <li>روش: <code>baseline</code> یا <code>cva</code></li>
+            </ul>
+          </article>
+          <article class="panel">
+            <h3>خروجی در <code>data/processed/&lt;run_id&gt;/</code></h3>
+            <ul>
+              <li><code>change_mask.tif / .png</code></li>
+              <li><code>ndvi_*.tif</code> و <code>ndvi_diff.png</code></li>
+              <li><code>rgb_t1.png</code> / <code>rgb_t2.png</code></li>
+              <li><code>change_regions.geojson</code></li>
+              <li>آمار و metrics گسترش‌یافته</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="callout info">
+          <h3>داده واقعی در برابر نمونه</h3>
+          <p>
+            برای دموی آفلاین از رسترهای مصنوعی منسجم استفاده می‌شود. برای تحلیل واقعی، کامپوزیت Sentinel-2 از
+            Planetary Computer با اسکریپت‌های <code>scripts/download_oman.py</code> یا
+            <code>scripts/download_sentinel2.py</code> قابل دریافت است.
+          </p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="cta-row">
+          <a class="btn primary" href="methods.html">بعدی: روش‌ها و شاخص‌ها</a>
+          <a class="btn ghost" href="technology.html">بازگشت به معماری</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div>GeoAI Docs · خط لوله داده</div>
+        <div><a href="index.html">بازگشت به معرفی</a></div>
+      </div>
+    </footer>
+    <script src="assets/nav.js"></script>
+  </body>
+</html>

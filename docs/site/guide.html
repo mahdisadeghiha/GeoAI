@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>راهنما و API — GeoAI Docs</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="index.html">
+          <div class="brand-mark" aria-hidden="true"></div>
+          <div>
+            <strong>GeoAI Docs</strong>
+            <span>Guide &amp; API</span>
+          </div>
+        </a>
+        <nav class="nav" aria-label="اصلی">
+          <a href="index.html">معرفی</a>
+          <a href="urbanism.html">شهرسازی</a>
+          <a href="technology.html">فنی</a>
+          <a href="pipeline.html">پایپ‌لاین</a>
+          <a href="methods.html">روش‌ها</a>
+          <a href="guide.html">راهنما و API</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <p class="eyebrow">Runbook</p>
+      <h1>راهنمای اجرا، داشبورد و API</h1>
+      <p class="lead">
+        این صفحه برای راه‌اندازی محلی، استفاده از داشبورد، و فراخوانی endpointهای اصلی نوشته شده است.
+      </p>
+    </section>
+
+    <main class="main">
+      <section class="section">
+        <div class="section-head">
+          <h2>اجرای سریع محلی</h2>
+        </div>
+        <div class="grid-2">
+          <article class="panel">
+            <h3>Backend</h3>
+            <pre>cd backend
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+python ..\scripts\generate_test_rasters.py
+uvicorn app.main:app --host 127.0.0.1 --port 8000</pre>
+          </article>
+          <article class="panel">
+            <h3>Frontend</h3>
+            <pre>cd frontend
+npm install
+npm run dev -- --host 127.0.0.1 --port 5173</pre>
+            <p class="muted">سپس باز کنید: <code>http://127.0.0.1:5173</code></p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>کار با داشبورد</h2>
+        </div>
+        <div class="timeline">
+          <div class="timeline-item panel">
+            <h3>۱. Study Area و سال‌ها را انتخاب کنید</h3>
+            <p class="muted">مثلاً Muscat، از ۲۰۲۰ به ۲۰۲۵.</p>
+          </div>
+          <div class="timeline-item panel">
+            <h3>۲. در صورت نیاز AOI بکشید</h3>
+            <p class="muted">Draw AOI محدوده‌ای از نقشه را برای برش تحلیل قفل می‌کند.</p>
+          </div>
+          <div class="timeline-item panel">
+            <h3>۳. Run Analysis</h3>
+            <p class="muted">KPIها، نمودارها و overlayهای نقشه تولید می‌شوند.</p>
+          </div>
+          <div class="timeline-item panel">
+            <h3>۴. لایه‌ها را toggle کنید</h3>
+            <p class="muted">ماهواره T1/T2، NDVI، Change Detection و Regions.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>API اصلی</h2>
+          <p>مستندات تعاملی FastAPI: <code>http://127.0.0.1:8000/docs</code></p>
+        </div>
+        <div class="panel" style="overflow-x: auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Endpoint</th>
+                <th>توضیح</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>GET</td>
+                <td><code>/api/health</code></td>
+                <td>سلامت سرویس و دیتابیس</td>
+              </tr>
+              <tr>
+                <td>GET</td>
+                <td><code>/api/study-areas</code></td>
+                <td>لیست محدوده‌های مطالعه و سال‌ها</td>
+              </tr>
+              <tr>
+                <td>POST</td>
+                <td><code>/api/analyze</code></td>
+                <td>اجرای کامل پایپ‌لاین</td>
+              </tr>
+              <tr>
+                <td>GET</td>
+                <td><code>/api/changes?run_id=</code></td>
+                <td>GeoJSON مناطق تغییر</td>
+              </tr>
+              <tr>
+                <td>GET</td>
+                <td><code>/api/statistics?run_id=</code></td>
+                <td>آمار اجرا</td>
+              </tr>
+              <tr>
+                <td>GET</td>
+                <td><code>/api/rasters/{run_id}/{file}</code></td>
+                <td>دانلود GeoTIFF/PNG خروجی</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>نمونه درخواست تحلیل</h2>
+        </div>
+        <pre>curl -X POST "http://127.0.0.1:8000/api/analyze" ^
+  -F "use_samples=true" ^
+  -F "method=baseline" ^
+  -F "study_area_id=muscat" ^
+  -F "year_t1=2020" ^
+  -F "year_t2=2025"</pre>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>خروجی نمونه</h2>
+        </div>
+        <pre>{
+  "run_id": "uuid",
+  "study_area_km2": 524.3,
+  "changed_area_km2": 18.7,
+  "change_percentage": 3.57,
+  "vegetation_change_percentage": -12.4,
+  "built_up_change_percentage": 8.2,
+  "num_change_regions": 7,
+  "outputs": {
+    "rgb_t2": "/api/rasters/.../rgb_t2.png",
+    "change_mask": "/api/rasters/.../change_mask.png"
+  }
+}</pre>
+      </section>
+
+      <section class="section">
+        <div class="grid-2">
+          <article class="panel callout info">
+            <h3>Docker</h3>
+            <pre>docker compose up --build</pre>
+            <p class="muted">سرویس‌های db + backend (+ در صورت پیکربندی، frontend) را بالا می‌آورد.</p>
+          </article>
+          <article class="panel callout">
+            <h3>مستندات بیشتر</h3>
+            <div class="toc">
+              <a href="../architecture.md">docs/architecture.md</a>
+              <a href="../pipeline.md">docs/pipeline.md</a>
+              <a href="../../README.md">README.md</a>
+              <a href="index.html">خانه مستندات HTML</a>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div>GeoAI Docs · راهنما و API</div>
+        <div><a href="index.html">بازگشت به معرفی</a></div>
+      </div>
+    </footer>
+    <script src="assets/nav.js"></script>
+  </body>
+</html>

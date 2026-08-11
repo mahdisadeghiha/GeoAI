@@ -1,0 +1,215 @@
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap");
+
+:root {
+  --geo-bg: #0b1218;
+  --geo-surface: #17232d;
+  --geo-border: #2a3d4c;
+  --geo-text: #e8eef2;
+  --geo-muted: #8fa3b0;
+  --geo-teal: #2f9e8a;
+  --geo-amber: #e0a045;
+  --geo-sky: #3db8d0;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(900px 420px at 8% -10%, rgba(47, 158, 138, 0.16), transparent 55%),
+    radial-gradient(700px 360px at 100% 0%, rgba(61, 184, 208, 0.1), transparent 50%),
+    var(--geo-bg) !important;
+  font-family: "Source Sans 3", "Sora", system-ui, sans-serif !important;
+  color: var(--geo-text);
+}
+
+.swagger-ui .topbar {
+  background: color-mix(in srgb, #121c24 92%, transparent) !important;
+  border-bottom: 1px solid var(--geo-border);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.swagger-ui .topbar .download-url-wrapper .select-label {
+  color: var(--geo-muted) !important;
+}
+
+.swagger-ui .topbar a {
+  max-width: 220px;
+}
+
+.swagger-ui .topbar img {
+  display: none;
+}
+
+.swagger-ui .topbar::before {
+  content: "GeoAI API";
+  display: inline-flex;
+  align-items: center;
+  margin-inline-start: 1rem;
+  font-family: "Sora", sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--geo-text);
+}
+
+.swagger-ui .info {
+  margin: 28px 0 !important;
+}
+
+.swagger-ui .info .title {
+  font-family: "Sora", sans-serif !important;
+  color: var(--geo-text) !important;
+  font-weight: 700 !important;
+}
+
+.swagger-ui .info .title small {
+  background: rgba(47, 158, 138, 0.18) !important;
+  border: 1px solid rgba(47, 158, 138, 0.35);
+  color: #9be4d2 !important;
+}
+
+.swagger-ui .info p,
+.swagger-ui .info li,
+.swagger-ui .markdown p,
+.swagger-ui .opblock-description-wrapper p,
+.swagger-ui .tab li,
+.swagger-ui label,
+.swagger-ui .parameter__name,
+.swagger-ui .response-col_status,
+.swagger-ui .response-col_description,
+.swagger-ui table thead tr td,
+.swagger-ui table thead tr th,
+.swagger-ui .opblock-summary-description {
+  color: var(--geo-muted) !important;
+  font-family: "Source Sans 3", sans-serif !important;
+}
+
+.swagger-ui .scheme-container {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 0 18px !important;
+}
+
+.swagger-ui .opblock-tag {
+  border-bottom: 1px solid var(--geo-border) !important;
+  color: var(--geo-text) !important;
+  font-family: "Sora", sans-serif !important;
+}
+
+.swagger-ui .opblock {
+  border-radius: 12px !important;
+  box-shadow: none !important;
+  border: 1px solid var(--geo-border) !important;
+  background: rgba(23, 35, 45, 0.85) !important;
+  margin: 0 0 12px !important;
+}
+
+.swagger-ui .opblock .opblock-summary {
+  border: none !important;
+}
+
+.swagger-ui .opblock.opblock-get {
+  border-color: rgba(47, 158, 138, 0.45) !important;
+  background: rgba(47, 158, 138, 0.08) !important;
+}
+
+.swagger-ui .opblock.opblock-post {
+  border-color: rgba(224, 160, 69, 0.45) !important;
+  background: rgba(224, 160, 69, 0.08) !important;
+}
+
+.swagger-ui .opblock.opblock-get .opblock-summary-method {
+  background: var(--geo-teal) !important;
+}
+
+.swagger-ui .opblock.opblock-post .opblock-summary-method {
+  background: var(--geo-amber) !important;
+  color: #1a1205 !important;
+}
+
+.swagger-ui .opblock-body pre,
+.swagger-ui .microlight,
+.swagger-ui .highlight-code {
+  background: #0a1016 !important;
+  border-radius: 10px !important;
+  border: 1px solid var(--geo-border);
+}
+
+.swagger-ui input[type="text"],
+.swagger-ui input[type="file"],
+.swagger-ui textarea,
+.swagger-ui select {
+  background: #0f1820 !important;
+  color: var(--geo-text) !important;
+  border: 1px solid var(--geo-border) !important;
+  border-radius: 8px !important;
+}
+
+.swagger-ui .btn.execute {
+  background: linear-gradient(135deg, #2f9e8a, #248a78) !important;
+  color: #04110e !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+}
+
+.swagger-ui .btn.authorize,
+.swagger-ui .authorization__btn {
+  border-color: var(--geo-sky) !important;
+  color: var(--geo-sky) !important;
+}
+
+.swagger-ui section.models {
+  border: 1px solid var(--geo-border) !important;
+  border-radius: 12px !important;
+  background: rgba(23, 35, 45, 0.7) !important;
+}
+
+.swagger-ui section.models h4,
+.swagger-ui .model-title,
+.swagger-ui .model {
+  color: var(--geo-text) !important;
+}
+
+.swagger-ui .wrapper {
+  padding: 0 24px !important;
+}
+
+/* Portal shortcut strip above swagger */
+.geoai-docs-banner {
+  max-width: 1460px;
+  margin: 0 auto;
+  padding: 14px 24px 0;
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.geoai-docs-banner a {
+  text-decoration: none;
+  color: var(--geo-text);
+  background: rgba(23, 35, 45, 0.9);
+  border: 1px solid var(--geo-border);
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.geoai-docs-banner a:hover {
+  border-color: rgba(61, 184, 208, 0.5);
+  color: #9adceb;
+}
+
+.geoai-docs-banner .brand {
+  margin-inline-end: auto;
+  color: var(--geo-muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: "Sora", sans-serif;
+}

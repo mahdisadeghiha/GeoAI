@@ -6,7 +6,6 @@ import numpy as np
 
 from app.core.config import Settings, get_settings
 from app.services.ndvi.ndvi_service import compute_ndvi
-from app.services.preprocessing.normalize import normalize_raster
 from app.utils.raster import RasterData
 
 
@@ -25,15 +24,34 @@ def compute_ndbi(swir: np.ndarray, nir: np.ndarray, eps: float = 1e-8) -> np.nda
 
 
 def _threshold_change(intensity: np.ndarray, valid_mask: np.ndarray, sigma: float) -> np.ndarray:
+    """
+    Detect change pixels with a hybrid absolute + statistical threshold.
+
+    Absolute floor catches strong spectral/NDVI shifts.
+    Sigma threshold catches sparse outliers without flagging the whole scene.
+    """
     valid = intensity[valid_mask]
     if valid.size == 0:
         return np.zeros_like(intensity, dtype=bool)
-    mean = valid.mean()
-    std = valid.std()
+
+    mean = float(valid.mean())
+    std = float(valid.std())
+    abs_floor = 0.18  # strong change in reflectance/NDVI composite space
+
     if std < 1e-8:
-        return np.abs(intensity - mean) > 0
-    threshold = mean + sigma * std
-    return (np.abs(intensity - mean) > threshold) & valid_mask
+        return (intensity >= abs_floor) & valid_mask
+
+    outlier_thresh = mean + sigma * std
+    # Prefer absolute floor when the AOI is dominated by change (high mean).
+    if mean >= abs_floor:
+        threshold = abs_floor
+    else:
+        threshold = max(abs_floor, outlier_thresh)
+
+    mask = (intensity >= threshold) & valid_mask
+    if not mask.any() and float(valid.max()) >= abs_floor:
+        mask = (intensity >= abs_floor) & valid_mask
+    return mask
 
 
 def detect_changes_baseline(
@@ -47,18 +65,16 @@ def detect_changes_baseline(
 ) -> ChangeDetectionResult:
     settings = settings or get_settings()
 
-    norm_t1 = normalize_raster(raster_t1)
-    norm_t2 = normalize_raster(raster_t2)
-
-    nir_t1 = norm_t1.band(nir_idx)
-    nir_t2 = norm_t2.band(nir_idx)
-    red_t1 = norm_t1.band(red_idx)
-    red_t2 = norm_t2.band(red_idx)
+    # Use raw reflectance-like values (not independently normalized) so unchanged
+    # areas stay near-zero difference even when change patches exist elsewhere.
+    nir_t1 = raster_t1.band(nir_idx)
+    nir_t2 = raster_t2.band(nir_idx)
+    red_t1 = raster_t1.band(red_idx)
+    red_t2 = raster_t2.band(red_idx)
 
     spectral_diff = np.abs(nir_t2 - nir_t1) + np.abs(red_t2 - red_t1)
     ndvi_diff = np.abs(
-        compute_ndvi(raster_t2.band(red_idx), raster_t2.band(nir_idx), settings.ndvi_eps)
-        - compute_ndvi(raster_t1.band(red_idx), raster_t1.band(nir_idx), settings.ndvi_eps)
+        compute_ndvi(red_t2, nir_t2, settings.ndvi_eps) - compute_ndvi(red_t1, nir_t1, settings.ndvi_eps)
     )
     intensity = 0.6 * spectral_diff + 0.4 * ndvi_diff
 
@@ -69,10 +85,8 @@ def detect_changes_baseline(
     if raster_t1.array.shape[0] > swir_idx and raster_t2.array.shape[0] > swir_idx:
         swir_t1 = raster_t1.band(swir_idx)
         swir_t2 = raster_t2.band(swir_idx)
-        nir_t1_raw = raster_t1.band(nir_idx)
-        nir_t2_raw = raster_t2.band(nir_idx)
-        ndbi_t1 = compute_ndbi(swir_t1, nir_t1_raw, settings.ndvi_eps)
-        ndbi_t2 = compute_ndbi(swir_t2, nir_t2_raw, settings.ndvi_eps)
+        ndbi_t1 = compute_ndbi(swir_t1, nir_t1, settings.ndvi_eps)
+        ndbi_t2 = compute_ndbi(swir_t2, nir_t2, settings.ndvi_eps)
         mean_t1 = ndbi_t1[valid_mask].mean() if valid_mask.any() else 0.0
         mean_t2 = ndbi_t2[valid_mask].mean() if valid_mask.any() else 0.0
         diff = mean_t2 - mean_t1

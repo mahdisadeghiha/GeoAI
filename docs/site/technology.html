@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>معماری فنی — GeoAI Docs</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="index.html">
+          <div class="brand-mark" aria-hidden="true"></div>
+          <div>
+            <strong>GeoAI Docs</strong>
+            <span>Technology</span>
+          </div>
+        </a>
+        <nav class="nav" aria-label="اصلی">
+          <a href="index.html">معرفی</a>
+          <a href="urbanism.html">شهرسازی</a>
+          <a href="technology.html">فنی</a>
+          <a href="pipeline.html">پایپ‌لاین</a>
+          <a href="methods.html">روش‌ها</a>
+          <a href="guide.html">راهنما و API</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <p class="eyebrow">Architecture &amp; Stack</p>
+      <h1>معماری فنی پروتوتایپ GeoAI</h1>
+      <p class="lead">
+        سیستم به‌صورت full-stack طراحی شده: فرانت‌اند React برای اکتشاف، بک‌اند FastAPI برای پردازش، و
+        ذخیره دوگانه PostGIS + فایل برای پایداری نتایج.
+      </p>
+    </section>
+
+    <main class="main">
+      <section class="section">
+        <div class="panel">
+          <p class="eyebrow">High-level flow</p>
+          <div class="flow" style="margin-top: 0.75rem">
+            <span class="chip">React + Leaflet</span><span class="arrow">→</span>
+            <span class="chip">FastAPI</span><span class="arrow">→</span>
+            <span class="chip">AnalysisService</span><span class="arrow">→</span>
+            <span class="chip">Preprocess / NDVI / CD / Spatial</span><span class="arrow">→</span>
+            <span class="chip">PostGIS + GeoTIFF/PNG</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>پشته فناوری</h2>
+        </div>
+        <div class="panel" style="overflow-x: auto">
+          <table>
+            <thead>
+              <tr>
+                <th>لایه</th>
+                <th>ابزار</th>
+                <th>نقش</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Backend</td>
+                <td>Python, FastAPI, uvicorn, Pydantic</td>
+                <td>API، اعتبارسنجی، orchestration</td>
+              </tr>
+              <tr>
+                <td>Raster GIS</td>
+                <td>rasterio, numpy, scipy, scikit-image</td>
+                <td>خواندن/نوشتن GeoTIFF و محاسبات آرایه‌ای</td>
+              </tr>
+              <tr>
+                <td>Vector GIS</td>
+                <td>geopandas, shapely, pyproj</td>
+                <td>پلی‌گان‌سازی و CRS</td>
+              </tr>
+              <tr>
+                <td>Database</td>
+                <td>PostgreSQL + PostGIS, SQLAlchemy</td>
+                <td>ذخیره run و مناطق تغییر</td>
+              </tr>
+              <tr>
+                <td>Frontend</td>
+                <td>React 18, TypeScript, Vite, Leaflet</td>
+                <td>داشبورد، نقشه، لایه‌ها، آمار</td>
+              </tr>
+              <tr>
+                <td>Data access</td>
+                <td>pystac-client, planetary-computer, stackstac</td>
+                <td>دانلود Sentinel-2 از STAC</td>
+              </tr>
+              <tr>
+                <td>Ops</td>
+                <td>Docker Compose, pytest</td>
+                <td>استقرار و تست</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>ساختار مخزن</h2>
+        </div>
+        <div class="grid-2">
+          <article class="panel">
+            <h3>backend/app/</h3>
+            <ul>
+              <li><code>api/routes/</code> — endpointهای REST</li>
+              <li><code>services/preprocessing/</code> — آماده‌سازی رستر</li>
+              <li><code>services/ndvi/</code> — شاخص پوشش گیاهی</li>
+              <li><code>services/change_detection/</code> — baseline و CVA</li>
+              <li><code>services/spatial_analysis/</code> — polygonize</li>
+              <li><code>utils/preview_png.py</code> — overlay مرورگرپسند</li>
+              <li><code>utils/run_store.py</code> — fallback فایل‌محور</li>
+            </ul>
+          </article>
+          <article class="panel">
+            <h3>frontend/src/</h3>
+            <ul>
+              <li><code>pages/Dashboard.tsx</code> — فضای کاری اصلی</li>
+              <li><code>map/MapView.tsx</code> — Leaflet + ImageOverlay</li>
+              <li><code>components/StatsPanel.tsx</code> — KPI و نمودارها</li>
+              <li><code>components/LayerControl.tsx</code> — کنترل لایه‌ها</li>
+              <li><code>services/api.ts</code> — کلاینت API</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>تصمیم‌های طراحی فنی</h2>
+        </div>
+        <div class="grid-2">
+          <article class="panel">
+            <h3>PNG برای نقشه، GeoTIFF برای علم</h3>
+            <p class="muted">
+              Leaflet نمی‌تواند GeoTIFF خام را به‌عنوان ImageOverlay نشان دهد. بنابراین برای نمایش، PNG ساخته می‌شود؛
+              برای تحلیل علمی همان GeoTIFFها حفظ می‌شوند.
+            </p>
+          </article>
+          <article class="panel">
+            <h3>Fallback بدون دیتابیس</h3>
+            <p class="muted">
+              اگر PostGIS بالا نباشد، آمار و GeoJSON در <code>data/processed/&lt;run_id&gt;/</code> ذخیره می‌شوند تا
+              پروتوتایپ همچنان قابل‌اجرا بماند.
+            </p>
+          </article>
+          <article class="panel">
+            <h3>ماژولار بودن پایپ‌لاین</h3>
+            <p class="muted">
+              هر مرحله (validate، reproject، align، ndvi، detect، polygonize) جداست تا بتوان روش‌ها را تعویض یا تست کرد.
+            </p>
+          </article>
+          <article class="panel">
+            <h3>نمونه مصنوعی برای CI</h3>
+            <p class="muted">
+              <code>data/samples/</code> امکان توسعه آفلاین و تست بدون دانلود سنگین Sentinel-2 را می‌دهد.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="cta-row">
+          <a class="btn primary" href="pipeline.html">بعدی: پایپ‌لاین داده</a>
+          <a class="btn ghost" href="guide.html">راهنمای اجرا</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div>GeoAI Docs · معماری فنی</div>
+        <div><a href="index.html">بازگشت به معرفی</a></div>
+      </div>
+    </footer>
+    <script src="assets/nav.js"></script>
+  </body>
+</html>

@@ -1,161 +1,259 @@
-# GeoAI Urban Satellite Change Detection
+<div align="center">
 
-Research & Development prototype for detecting and analyzing urban land cover changes from multi-temporal satellite imagery over **Muscat, Oman**.
+# GeoAI Urban Intelligence
 
-> **Disclaimer:** This is a research prototype. Results require expert validation before operational or decision-making use. Do not treat outputs as ground truth without field verification.
+### Satellite change detection for Muscat & Oman — research prototype
 
----
+**Detect · Quantify · Map** urban growth and vegetation change from multi-temporal Sentinel-2 imagery.
 
-## 1. Project Overview
+[![Python](https://img.shields.io/badge/Python-3.12+-3776AB?style=flat-square&logo=python&logoColor=white)](backend/requirements.txt)
+[![FastAPI](https://img.shields.io/badge/FastAPI-API-009688?style=flat-square&logo=fastapi&logoColor=white)](backend/app/main.py)
+[![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=black)](frontend/package.json)
+[![PostGIS](https://img.shields.io/badge/PostGIS-optional-336791?style=flat-square&logo=postgresql&logoColor=white)](docker-compose.yml)
+[![License](https://img.shields.io/badge/License-MIT-e0a045?style=flat-square)](LICENSE)
 
-**GeoAI Urban Satellite Change Detection** compares two satellite images of the same urban area from different time periods, identifies changed regions, and quantifies urban growth and vegetation change.
+[Dashboard](#-quick-start) · [API Portal](#-interfaces--docs) · [HTML Docs](docs/site/index.html) · [Architecture](docs/architecture.md) · [Pipeline](docs/pipeline.md)
 
-The system ingests GeoTIFF rasters, runs a modular geospatial processing pipeline, and delivers statistics, vector change regions, and an interactive map via a REST API and React frontend.
-
----
-
-## 2. Research Problem
-
-**How can satellite imagery be used to detect and quantify urban changes over time?**
-
-Urban areas expand, vegetation is replaced by built-up land, and land cover shifts in ways that are visible in multi-spectral satellite data. This project demonstrates a reproducible workflow to:
-
-- Align multi-temporal imagery
-- Compute spectral indices (NDVI, NDBI)
-- Detect changes using classical remote sensing methods
-- Vectorize and quantify change regions spatially
+</div>
 
 ---
 
-## 3. Features
+> **فارسی (خلاصه):** پروتوتایپ پژوهشی GeoAI برای تشخیص و کمی‌سازی تغییرات شهری با تصاویر ماهواره‌ای چندزمانه روی **مسقط و عمان**. داشبورد تعاملی، API زیبا، پایپ‌لاین ماژولار رستر، و مستندات چندصفحه‌ای.
 
-- GeoTIFF ingestion with CRS, resolution, and bounds preservation
-- 8-step modular preprocessing pipeline
-- NDVI computation and vegetation change quantification
-- Baseline spectral change detection + Change Vector Analysis (CVA)
-- Built-up change proxy via NDBI
-- Raster-to-polygon conversion with GeoJSON export
-- PostGIS persistence for study areas, analysis runs, and change regions
-- FastAPI REST API with file upload support
-- React + Leaflet interactive map with layer control
-- Docker Compose for full-stack deployment
-- pytest test suite with synthetic sample data
+> ⚠️ **Disclaimer:** Research prototype only. Validate outputs with expert review / field data before any operational or planning decision.
 
 ---
 
-## 4. Architecture
+## Why this exists
 
-See [docs/architecture.md](docs/architecture.md) for the full architecture diagram and component breakdown.
+Cities grow faster than field surveys can track. Multi-spectral satellite time series make urban expansion, vegetation loss, and land-cover shifts **observable, measurable, and mappable**.
 
-```
-Frontend (React/Leaflet) → FastAPI → Processing Pipeline → PostGIS + GeoTIFF files
-```
+This project answers:
+
+> *How can we detect and quantify urban change from satellite imagery — and present it as usable intelligence?*
+
+| Observe | Measure | Interpret |
+|:---:|:---:|:---:|
+| Compare T1 vs T2 imagery | Area, %, NDVI Δ, NDBI Δ | Hotspots for planning review |
 
 ---
 
-## 5. Technology Stack
+## Highlights
 
-| Layer | Technology |
+| Capability | What you get |
 |---|---|
-| Backend | Python 3.12, FastAPI, uvicorn, pydantic-settings |
-| GIS/Raster | rasterio, rioxarray, numpy, scipy, scikit-image |
-| Vector | geopandas, shapely, pyproj |
-| Database | PostgreSQL 16 + PostGIS 3.4, SQLAlchemy, GeoAlchemy2 |
-| Frontend | React 18, TypeScript, Vite, Leaflet, react-leaflet |
-| Testing | pytest, httpx |
-| Containerization | Docker Compose |
+| **Multi-AOI study areas** | Oman national + Muscat, Sohar, Salalah, Nizwa, Duqm, Sur |
+| **Spectral intelligence** | NDVI, NDBI, SAVI, NDWI + extended metrics |
+| **Change detection** | Baseline spectral thresholding + optional **CVA** |
+| **Spatial products** | Change polygons (GeoJSON), scores, area stats |
+| **Map overlays** | Browser-ready PNG layers (RGB, NDVI diff, change mask) |
+| **Interactive dashboard** | KPI cards, trend/pie charts, layer toggles, AOI draw |
+| **API portal** | Branded FastAPI home + themed Swagger / ReDoc |
+| **Offline-friendly** | Synthetic samples + file-store fallback (no PostGIS required) |
 
 ---
 
-## 6. Dataset
+## Architecture
 
-### Study Area
-**Muscat, Oman** — urban core bounding box `[58.35, 23.50, 58.65, 23.65]` (WGS84)
+```mermaid
+flowchart LR
+  subgraph UI["Frontend"]
+    D[React Dashboard]
+    M[Leaflet Map]
+  end
 
-### Source
-[Microsoft Planetary Computer STAC](https://planetarycomputer.microsoft.com/api/stac/v1) — Sentinel-2 Level-2A (`sentinel-2-l2a`)
+  subgraph API["Backend"]
+    P[API Portal + FastAPI]
+    S[AnalysisService]
+  end
+
+  subgraph PIPE["Processing"]
+    PRE[Preprocess]
+    IDX[Indices]
+    CD[Change Detect]
+    SP[Polygonize]
+  end
+
+  subgraph STORE["Storage"]
+    FS[(GeoTIFF / PNG / GeoJSON)]
+    DB[(PostGIS optional)]
+  end
+
+  D --> P
+  M --> P
+  P --> S
+  S --> PRE --> IDX --> CD --> SP
+  SP --> FS
+  S --> DB
+```
+
+**Flow:** `React/Leaflet → FastAPI → modular pipeline → rasters + vectors (+ PostGIS)`
+
+---
+
+## Tech stack
+
+| Layer | Tools |
+|---|---|
+| Backend | Python, FastAPI, uvicorn, Pydantic Settings |
+| Raster / GIS | rasterio, NumPy, SciPy, scikit-image |
+| Vector | GeoPandas, Shapely, PyProj |
+| Database | PostgreSQL 16 + PostGIS 3.4 *(optional)* |
+| Frontend | React 18, TypeScript, Vite, Leaflet |
+| Data access | Planetary Computer STAC, pystac-client, stackstac |
+| Ops | Docker Compose, pytest |
+
+---
+
+## Interfaces & docs
+
+| Surface | URL / path | Purpose |
+|---|---|---|
+| **Dashboard** | `http://127.0.0.1:5173` | Run analysis, explore map & charts |
+| **API Portal** | `http://127.0.0.1:8000/` | Live health, endpoint shortcuts |
+| **Swagger** | `http://127.0.0.1:8000/docs` | Try-it-out OpenAPI (GeoAI theme) |
+| **ReDoc** | `http://127.0.0.1:8000/redoc` | Readable API reference |
+| **HTML docs** | [`docs/site/`](docs/site/index.html) | Urban science + technical story (FA) |
+| **Deep dives** | [`docs/architecture.md`](docs/architecture.md), [`docs/pipeline.md`](docs/pipeline.md) | Diagrams & step detail |
+
+Serve the HTML docs locally:
+
+```bash
+python -m http.server 5500 --directory docs/site
+# → http://127.0.0.1:5500
+```
+
+---
+
+## Quick start
+
+### Prerequisites
+
+- Python **3.12+**
+- Node.js **20+**
+- PostGIS *(optional)* — file-based run store works without it
+- Docker *(optional)* — for one-command stack
+
+### 1) Backend
+
+```bash
+cd backend
+python -m venv .venv
+
+# Windows
+.venv\Scripts\activate
+
+# macOS / Linux
+# source .venv/bin/activate
+
+pip install -r requirements.txt
+python ../scripts/generate_test_rasters.py
+uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+### 2) Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev -- --host 127.0.0.1 --port 5173
+```
+
+Open **http://127.0.0.1:5173** → choose a study area → **Run Analysis**.
+
+### 3) Docker (full stack)
+
+```bash
+docker compose up --build
+```
+
+| Service | URL |
+|---|---|
+| Frontend | http://localhost:5173 |
+| API portal | http://localhost:8000/ |
+| PostGIS | localhost:5432 |
+
+Copy `.env.example` → `.env` for local overrides.
+
+---
+
+## Dataset
+
+**Primary AOI:** Muscat, Oman · WGS84 ≈ `[58.35, 23.50, 58.65, 23.65]`  
+**Source:** [Microsoft Planetary Computer](https://planetarycomputer.microsoft.com/api/stac/v1) · `sentinel-2-l2a`
 
 | Property | Value |
 |---|---|
-| Satellite | Sentinel-2A/2B (Copernicus/ESA) |
-| Resolution | 10 m (B02, B03, B04, B08); 20 m (B11) |
-| CRS | EPSG:32640 (UTM Zone 40N) |
-| MGRS Tile | 40RGU |
-| Time 1 | 2020 dry season (Oct–Feb median composite) |
-| Time 2 | 2025 dry season (Oct–Feb median composite) |
+| Sensor | Sentinel-2A/2B (Copernicus / ESA) |
 | Bands | B02, B03, B04, B08, B11 |
+| CRS | EPSG:32640 (UTM 40N) |
+| Composites | Dry-season median (Oct → Feb), e.g. 2020 vs 2025 |
 
-### Why this dataset?
-No pre-packaged Muscat 2020/2025 GeoTIFF bundle exists for free offline use. The project provides:
-1. `scripts/download_sentinel2.py` — reproducible STAC download
-2. `data/samples/` — synthetic test rasters for CI/offline dev
-3. `data/metadata/dataset_metadata.json` — full provenance record
+**Reproducibility paths**
 
-**Fallback:** [QuickMapTools](https://www.quickmaptools.com/download-satellite-imagery) for manual clipping of the same bbox/bands.
-
----
-
-## 7. Data Processing Pipeline
-
-See [docs/pipeline.md](docs/pipeline.md) for the detailed pipeline diagram.
-
-1. Validation → 2. CRS check → 3. Reprojection → 4. Resampling → 5. Alignment → 6. Cropping → 7. Normalization → 8. NoData handling → NDVI → Change Detection → Spatial Analysis
+1. `scripts/download_sentinel2.py` / `scripts/download_oman.py` — STAC downloads  
+2. `data/samples/` — coherent synthetic GeoTIFFs for CI & offline demos  
+3. `data/metadata/dataset_metadata.json` — provenance record  
 
 ---
 
-## 8. Change Detection Method
+## Processing pipeline
 
-### Baseline (default)
-- Spectral difference on normalized NIR + Red bands
-- NDVI difference with sigma-based thresholding
-- Output: binary change mask + change intensity map
-
-### Built-up proxy
-- NDBI = (SWIR − NIR) / (SWIR + NIR)
-- Relative change in mean NDBI between time periods
-
-### Advanced: Change Vector Analysis (CVA)
-- 2D feature space (NIR, Red)
-- Mahalanobis distance threshold (χ² = 5.991, p = 0.05)
-- Select via `method=cva` in API or CLI
-
----
-
-## 9. NDVI Method
-
-```
-NDVI = (NIR - Red) / (NIR + Red)
-NDVI_diff = NDVI_t2 - NDVI_t1
-Vegetation Change % = relative change in mean NDVI over valid pixels
+```text
+GeoTIFF T1/T2
+    → validate → CRS / reproject → align (X/Y) → AOI crop
+    → NoData mask → NDVI / NDBI / …
+    → change detection (baseline | CVA)
+    → polygonize → stats + GeoJSON
+    → PNG overlays for Leaflet
 ```
 
-Outputs: NDVI rasters for both dates, difference raster, and summary statistic.
+Details: [`docs/pipeline.md`](docs/pipeline.md)
 
 ---
 
-## 10. API Documentation
+## Methods (short)
 
-Interactive docs available at `http://localhost:8000/docs` when the backend is running.
+### Indices
+
+```text
+NDVI = (NIR − Red) / (NIR + Red)
+NDBI = (SWIR − NIR) / (SWIR + NIR)
+```
+
+Also computed: **SAVI**, **NDWI**, plus distribution stats (mean, percentiles, fractions).
+
+### Change detection
+
+| Method | Idea | When |
+|---|---|---|
+| **Baseline** *(default)* | Spectral / NDVI intensity + σ threshold | Fast, explainable demos |
+| **CVA** | Mahalanobis distance in feature space (χ²) | Richer multi-band change |
+
+Built-up change is reported as a **relative NDBI shift** (proxy, not a full LULC classifier).
+
+---
+
+## API cheatsheet
 
 | Method | Endpoint | Description |
 |---|---|---|
-| GET | `/api/health` | Service and database health |
-| GET | `/api/study-area` | Muscat AOI metadata |
-| GET | `/api/statistics?run_id=` | Analysis statistics |
-| GET | `/api/changes?run_id=` | GeoJSON change regions |
-| GET | `/api/ndvi?run_id=` | NDVI summary and raster URLs |
-| POST | `/api/analyze` | Run full pipeline (upload or sample data) |
-| GET | `/api/rasters/{run_id}/{filename}` | Download output GeoTIFF |
-
-### Example: Run analysis with sample data
+| `GET` | `/api/health` | Service + DB status |
+| `GET` | `/api/study-areas` | AOIs + available years |
+| `POST` | `/api/analyze` | Full pipeline (samples or uploads) |
+| `GET` | `/api/changes?run_id=` | Change GeoJSON |
+| `GET` | `/api/statistics?run_id=` | Run statistics |
+| `GET` | `/api/ndvi?run_id=` | NDVI summary |
+| `GET` | `/api/rasters/{run_id}/{file}` | GeoTIFF / PNG download |
 
 ```bash
-curl -X POST "http://localhost:8000/api/analyze" \
+curl -X POST "http://127.0.0.1:8000/api/analyze" \
   -F "use_samples=true" \
-  -F "method=baseline"
+  -F "method=baseline" \
+  -F "study_area_id=muscat" \
+  -F "year_t1=2020" \
+  -F "year_t2=2025"
 ```
-
-### Example response
 
 ```json
 {
@@ -165,153 +263,90 @@ curl -X POST "http://localhost:8000/api/analyze" \
   "change_percentage": 3.57,
   "vegetation_change_percentage": -12.4,
   "built_up_change_percentage": 8.2,
-  "num_change_regions": 1
+  "num_change_regions": 7
 }
 ```
 
----
-
-## 11. Installation
-
-### Prerequisites
-- Python 3.12+
-- Node.js 20+ (for frontend)
-- PostgreSQL 16 + PostGIS (optional; file-based fallback available)
-- Docker & Docker Compose (recommended)
-
-### Backend setup
-
-```bash
-cd backend
-python -m venv .venv
-.venv\Scripts\activate        # Windows
-pip install -r requirements.txt
-```
-
-### Generate sample data
-
-```bash
-python scripts/generate_test_rasters.py
-```
-
-### Run backend
-
-```bash
-cd backend
-uvicorn app.main:app --reload --port 8000
-```
-
-### Frontend setup
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Open `http://localhost:5173`
+Metrics are **computed from rasters** — not hard-coded placeholders.
 
 ---
 
-## 12. Docker Setup
+## CLI & tests
 
 ```bash
-docker compose up --build
-```
-
-| Service | URL |
-|---|---|
-| Frontend | http://localhost:5173 |
-| Backend API | http://localhost:8000/docs |
-| PostGIS | localhost:5432 |
-
-Environment variables are configured in `docker-compose.yml`. Copy `.env.example` to `.env` for local overrides.
-
----
-
-## 13. Example Usage
-
-### CLI
-
-```bash
-cd backend
-python ../scripts/run_analysis_cli.py \
-  --t1 ../data/samples/sample_t1.tif \
-  --t2 ../data/samples/sample_t2.tif \
+# CLI analysis
+python scripts/run_analysis_cli.py \
+  --t1 data/samples/sample_t1.tif \
+  --t2 data/samples/sample_t2.tif \
   --method baseline
-```
 
-### Download real Sentinel-2 data
-
-```bash
+# Real Sentinel-2 (example)
 python scripts/download_sentinel2.py --year 2020 --output data/raw/muscat_2020.tif
 python scripts/download_sentinel2.py --year 2025 --output data/raw/muscat_2025.tif
-```
 
-### Run tests
-
-```bash
-cd backend
-pytest tests -v
+# Tests
+cd backend && pytest tests -v
 ```
 
 ---
 
-## 14. Results
+## Repository layout
 
-After running analysis on sample data, the system produces:
-
-- **Study area** — total valid analysis extent in km²
-- **Changed area** — extent of detected change in km²
-- **Change percentage** — proportion of study area changed
-- **Vegetation change** — relative NDVI shift (%)
-- **Urban growth** — relative NDBI shift (%)
-- **Change regions** — vector polygons with area, centroid, and change score
-- **Output rasters** — change mask, intensity, NDVI, RGB composites
-
-All values are computed from actual raster data — nothing is hard-coded.
-
----
-
-## 15. Limitations
-
-- **Research prototype only** — not validated against ground truth
-- **Cloud cover** — dry-season median composites mitigate but do not eliminate cloud effects
-- **Built-up proxy** — NDBI is a spectral index proxy, not a formal land cover classification
-- **Baseline methods** — classical thresholding/CVA; no deep learning change detection
-- **Sample data** — synthetic rasters for CI; real Muscat results require STAC download
-- **Resolution** — Sentinel-2 10 m limits detection of sub-pixel changes
-- **PostGIS optional** — file-based fallback works without database for development
+```text
+├── backend/                 # FastAPI + GIS pipeline + API portal UI
+│   └── app/web/             # Portal HTML + Swagger theme
+├── frontend/                # React + Leaflet intelligence dashboard
+├── data/
+│   ├── samples/             # Synthetic GeoTIFFs for offline / CI
+│   ├── raw/                 # Downloaded composites (gitignored)
+│   ├── processed/           # Per-run outputs (gitignored)
+│   └── metadata/            # Dataset provenance
+├── scripts/                 # Download, samples, CLI
+├── docs/
+│   ├── site/                # Multi-page HTML documentation (FA)
+│   ├── architecture.md
+│   └── pipeline.md
+├── docker/                  # PostGIS init
+├── notebooks/               # Exploration
+├── docker-compose.yml
+└── README.md
+```
 
 ---
 
-## 16. Future Work
+## Limitations
 
-- Integrate Sentinel-2 SCL cloud masking in download pipeline
-- Add supervised land cover classification (e.g., Random Forest on spectral bands)
-- Implement deep learning change detection (FC-Siam-diff, BIT)
-- Time series analysis with >2 dates
-- COG tile server for efficient map overlay rendering
-- Automated accuracy assessment with reference data
-- Export to standard formats (Shapefile, GeoPackage)
-- CI/CD pipeline with GitHub Actions
+- Research prototype — **not** ground-truth validated  
+- Cloud / phenology / viewing geometry can create false positives/negatives  
+- NDBI is a **spectral proxy**, not formal urban classification  
+- Classical methods only (no deep-learning CD yet)  
+- Sentinel-2 **10 m** limits sub-pixel detail  
+- Sample rasters are synthetic stand-ins until STAC downloads are used  
+
+---
+
+## Roadmap
+
+- [ ] SCL cloud masking in download pipeline  
+- [ ] Supervised LULC (e.g. Random Forest)  
+- [ ] Deep learning change models (FC-Siam-diff / BIT)  
+- [ ] Multi-date time series (>2 epochs)  
+- [ ] COG / tile server for map performance  
+- [ ] Accuracy assessment against reference data  
+- [ ] GitHub Actions CI  
 
 ---
 
 ## License
 
-MIT License — see [LICENSE](LICENSE).
+MIT — see [`LICENSE`](LICENSE).
 
-## Project Structure
+---
 
-```
-├── backend/           # FastAPI application
-├── frontend/          # React + Leaflet dashboard
-├── data/              # Raw, processed, samples, metadata
-├── scripts/           # Download, test data generation, CLI
-├── docker/            # PostGIS init SQL
-├── docs/              # Architecture and pipeline docs
-├── notebooks/         # Exploratory analysis
-├── docker-compose.yml
-└── README.md
-```
+<div align="center">
+
+**Built as a GeoAI R&amp;D prototype for urban remote sensing over Oman.**
+
+*Observe the city from orbit. Measure what changed. Map what matters.*
+
+</div>

@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>روش‌ها و شاخص‌ها — GeoAI Docs</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="index.html">
+          <div class="brand-mark" aria-hidden="true"></div>
+          <div>
+            <strong>GeoAI Docs</strong>
+            <span>Methods &amp; Indices</span>
+          </div>
+        </a>
+        <nav class="nav" aria-label="اصلی">
+          <a href="index.html">معرفی</a>
+          <a href="urbanism.html">شهرسازی</a>
+          <a href="technology.html">فنی</a>
+          <a href="pipeline.html">پایپ‌لاین</a>
+          <a href="methods.html">روش‌ها</a>
+          <a href="guide.html">راهنما و API</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <p class="eyebrow">Spectral Intelligence</p>
+      <h1>شاخص‌ها و روش‌های تشخیص تغییر</h1>
+      <p class="lead">
+        هسته علمی پروژه ترکیبی از شاخص‌های طیفی کلاسیک سنجش از دور و دو روش تشخیص تغییر است تا هم پوشش گیاهی و
+        هم سیگنال ساخته‌شده قابل تفسیر باشند.
+      </p>
+    </section>
+
+    <main class="main">
+      <section class="section">
+        <div class="section-head">
+          <h2>باندهای Sentinel-2 مورد استفاده</h2>
+        </div>
+        <div class="panel" style="overflow-x: auto">
+          <table>
+            <thead>
+              <tr>
+                <th>باند</th>
+                <th>نام</th>
+                <th>کاربرد در پروژه</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>B02</td>
+                <td>Blue</td>
+                <td>ترکیب رنگ واقعی (RGB)</td>
+              </tr>
+              <tr>
+                <td>B03</td>
+                <td>Green</td>
+                <td>RGB و NDWI</td>
+              </tr>
+              <tr>
+                <td>B04</td>
+                <td>Red</td>
+                <td>NDVI / SAVI و تشخیص تغییر</td>
+              </tr>
+              <tr>
+                <td>B08</td>
+                <td>NIR</td>
+                <td>پوشش گیاهی و تغییر طیفی</td>
+              </tr>
+              <tr>
+                <td>B11</td>
+                <td>SWIR</td>
+                <td>NDBI (پروکسی ساخته‌شده)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>شاخص‌های طیفی</h2>
+        </div>
+        <div class="grid-2">
+          <article class="panel">
+            <h3>NDVI — پوشش گیاهی</h3>
+            <div class="formula">NDVI = (NIR − Red) / (NIR + Red)</div>
+            <p class="muted">
+              مقادیر بالاتر یعنی پوشش سبزتر. اختلاف زمانی NDVI برای برآورد افت/رشد گیاهی استفاده می‌شود.
+            </p>
+          </article>
+          <article class="panel">
+            <h3>NDBI — ساخته‌شده</h3>
+            <div class="formula">NDBI = (SWIR − NIR) / (SWIR + NIR)</div>
+            <p class="muted">
+              پروکسی رشد شهری. افزایش میانگین NDBI می‌تواند نشان‌دهنده گسترش سطوح ساخته‌شده باشد.
+            </p>
+          </article>
+          <article class="panel">
+            <h3>SAVI — گیاهی با اصلاح خاک</h3>
+            <div class="formula">SAVI = ((NIR − Red) / (NIR + Red + L)) × (1 + L)</div>
+            <p class="muted">در مناطق خشک با خاک نمایان (مثل عمان) حساسیت به خاک پس‌زمینه را کاهش می‌دهد.</p>
+          </article>
+          <article class="panel">
+            <h3>NDWI — آب / رطوبت</h3>
+            <div class="formula">NDWI = (Green − NIR) / (Green + NIR)</div>
+            <p class="muted">برای پایش پهنه‌های آبی یا تغییرات مرتبط با رطوبت سطح مفید است.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>روش‌های Change Detection</h2>
+        </div>
+        <div class="grid-2">
+          <article class="panel">
+            <span class="tag">default</span>
+            <h3>Baseline</h3>
+            <p>
+              اختلاف طیفی روی باندهای کلیدی + آستانه‌گذاری مبتنی بر شدت تغییر (sigma threshold) برای ساخت ماسک باینری
+              و نقشه شدت.
+            </p>
+            <ul class="muted">
+              <li>سریع و قابل‌توضیح</li>
+              <li>مناسب پروتوتایپ و دمو</li>
+              <li>حساس به کالیبراسیون آستانه</li>
+            </ul>
+          </article>
+          <article class="panel">
+            <span class="tag">advanced</span>
+            <h3>Change Vector Analysis (CVA)</h3>
+            <p>
+              در فضای ویژگی (مثلاً NIR–Red)، بردار تغییر بین T1 و T2 ساخته می‌شود و با فاصله ماهالانوبیس و آستانه χ²
+              پیکسل‌های تغییر جدا می‌شوند.
+            </p>
+            <ul class="muted">
+              <li>حساس‌تر به الگوی طیفی چندباندی</li>
+              <li>انتخاب از API با <code>method=cva</code></li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>متریک‌هایی که داشبورد نشان می‌دهد</h2>
+        </div>
+        <div class="grid-3">
+          <article class="metric">
+            <span>Changed area</span>
+            <strong>km²</strong>
+          </article>
+          <article class="metric">
+            <span>Change percentage</span>
+            <strong>%</strong>
+          </article>
+          <article class="metric">
+            <span>Vegetation Δ</span>
+            <strong>NDVI-based</strong>
+          </article>
+          <article class="metric">
+            <span>Urban growth</span>
+            <strong>NDBI-based</strong>
+          </article>
+          <article class="metric">
+            <span>Regions</span>
+            <strong>count + area</strong>
+          </article>
+          <article class="metric">
+            <span>Intensity</span>
+            <strong>mean / max</strong>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="callout danger">
+          <h3>محدودیت‌ها</h3>
+          <p>
+            ابر، سایه، تفاوت زاویه دید، و تغییرات فنولوژیک می‌توانند مثبت/منفی کاذب بسازند. نتایج باید با تفسیر کارشناس
+            و در صورت امکان داده میدانی تکمیل شوند.
+          </p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="cta-row">
+          <a class="btn primary" href="guide.html">بعدی: راهنما و API</a>
+          <a class="btn ghost" href="urbanism.html">بازگشت به شهرسازی</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div>GeoAI Docs · روش‌ها و شاخص‌ها</div>
+        <div><a href="index.html">بازگشت به معرفی</a></div>
+      </div>
+    </footer>
+    <script src="assets/nav.js"></script>
+  </body>
+</html>

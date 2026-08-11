@@ -14,10 +14,18 @@ class HealthResponse(BaseModel):
 
 
 class StudyAreaResponse(BaseModel):
+    id: str | None = None
     name: str
     bbox: list[float]
     crs: str
     description: str
+    has_sample_data: bool = False
+    imagery_bbox: list[float] | None = None
+
+
+class StudyAreasListResponse(BaseModel):
+    areas: list[StudyAreaResponse]
+    available_years: list[int]
 
 
 class AnalysisStatistics(BaseModel):
@@ -43,6 +51,11 @@ class AnalysisOutputs(BaseModel):
 class AnalysisResponse(BaseModel):
     run_id: UUID
     status: str
+    study_area_id: str | None = None
+    study_area_name: str | None = None
+    year_t1: int | None = None
+    year_t2: int | None = None
+    aoi_bbox: list[float] | None = None
     study_area_km2: float
     changed_area_km2: float
     change_percentage: float
@@ -50,6 +63,9 @@ class AnalysisResponse(BaseModel):
     built_up_change_percentage: float
     num_change_regions: int
     outputs: AnalysisOutputs
+    metrics: dict[str, Any] | None = None
+    change_geojson: dict[str, Any] | None = None
+    note: str | None = None
     created_at: datetime | None = None
 
 

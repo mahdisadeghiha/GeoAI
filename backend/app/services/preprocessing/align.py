@@ -27,13 +27,15 @@ def _intersection_bounds(a: tuple[float, float, float, float], b: tuple[float, f
 
 def align_rasters(raster_a: RasterData, raster_b: RasterData) -> tuple[RasterData, RasterData]:
     """Align two rasters to a common grid using the finer resolution."""
-    res_a = abs(raster_a.transform.a)
-    res_b = abs(raster_b.transform.a)
-    target_res = min(res_a, res_b)
+    res_x = min(abs(raster_a.transform.a), abs(raster_b.transform.a))
+    res_y = min(abs(raster_a.transform.e), abs(raster_b.transform.e))
+    # Guard against degenerate transforms
+    res_x = res_x if res_x > 0 else abs(raster_a.transform.a) or 1.0
+    res_y = res_y if res_y > 0 else abs(raster_a.transform.e) or res_x
 
     bounds = _intersection_bounds(raster_a.bounds, raster_b.bounds)
-    width = max(1, int((bounds[2] - bounds[0]) / target_res))
-    height = max(1, int((bounds[3] - bounds[1]) / target_res))
+    width = max(1, int(round((bounds[2] - bounds[0]) / res_x)))
+    height = max(1, int(round((bounds[3] - bounds[1]) / res_y)))
     transform = from_bounds(*bounds, width, height)
 
     def _warp(r: RasterData) -> RasterData:

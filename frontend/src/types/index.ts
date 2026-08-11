@@ -1,10 +1,46 @@
-export interface AnalysisStatistics {
-  study_area_km2: number;
-  changed_area_km2: number;
-  change_percentage: number;
-  vegetation_change_percentage: number;
-  built_up_change_percentage: number;
-  num_change_regions: number;
+export interface IndexStats {
+  mean: number;
+  median: number;
+  std: number;
+  min: number;
+  max: number;
+  p25: number;
+  p75: number;
+}
+
+export interface ExtendedMetrics {
+  overview?: Record<string, string | number | number[] | null>;
+  extent?: Record<string, number>;
+  change_summary?: Record<string, number | string>;
+  ndvi?: {
+    formula?: string;
+    t1?: IndexStats;
+    t2?: IndexStats;
+    diff?: IndexStats;
+    vegetation_fraction_t1?: number;
+    vegetation_fraction_t2?: number;
+  };
+  ndbi?: {
+    formula?: string;
+    t1?: IndexStats;
+    t2?: IndexStats;
+    diff?: IndexStats;
+    built_up_fraction_t1?: number;
+    built_up_fraction_t2?: number;
+  };
+  savi?: {
+    formula?: string;
+    t1?: IndexStats;
+    t2?: IndexStats;
+    diff?: IndexStats;
+  };
+  ndwi?: {
+    formula?: string;
+    t1?: IndexStats;
+    t2?: IndexStats;
+    diff?: IndexStats;
+  };
+  spectral?: Record<string, IndexStats | number>;
 }
 
 export interface AnalysisOutputs {
@@ -21,6 +57,11 @@ export interface AnalysisOutputs {
 export interface AnalysisResponse {
   run_id: string;
   status: string;
+  study_area_id?: string;
+  study_area_name?: string;
+  year_t1?: number;
+  year_t2?: number;
+  aoi_bbox?: number[] | null;
   study_area_km2: number;
   changed_area_km2: number;
   change_percentage: number;
@@ -28,13 +69,24 @@ export interface AnalysisResponse {
   built_up_change_percentage: number;
   num_change_regions: number;
   outputs: AnalysisOutputs;
+  metrics?: ExtendedMetrics | null;
+  change_geojson?: GeoJSONFeatureCollection | null;
+  note?: string;
 }
 
 export interface StudyArea {
+  id: string;
   name: string;
   bbox: number[];
   crs: string;
   description: string;
+  has_sample_data: boolean;
+  imagery_bbox?: number[] | null;
+}
+
+export interface StudyAreasResponse {
+  areas: StudyArea[];
+  available_years: number[];
 }
 
 export interface GeoJSONFeatureCollection {
@@ -47,8 +99,8 @@ export interface GeoJSONFeatureCollection {
 }
 
 export interface LayerVisibility {
-  satellite2020: boolean;
-  satellite2025: boolean;
+  satelliteT1: boolean;
+  satelliteT2: boolean;
   ndvi: boolean;
   changeDetection: boolean;
   changeRegions: boolean;

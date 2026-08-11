@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GeoAI Urban Intelligence — مستندات پروژه</title>
+    <meta
+      name="description"
+      content="مستندات کامل پروژه تشخیص تغییر شهری با تصاویر ماهواره‌ای و GeoAI برای مسقط و عمان."
+    />
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="index.html">
+          <div class="brand-mark" aria-hidden="true"></div>
+          <div>
+            <strong>GeoAI Docs</strong>
+            <span>Urban Satellite Change Detection</span>
+          </div>
+        </a>
+        <nav class="nav" aria-label="اصلی">
+          <a href="index.html">معرفی</a>
+          <a href="urbanism.html">شهرسازی</a>
+          <a href="technology.html">فنی</a>
+          <a href="pipeline.html">پایپ‌لاین</a>
+          <a href="methods.html">روش‌ها</a>
+          <a href="guide.html">راهنما و API</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <p class="eyebrow">Research Prototype Documentation</p>
+          <h1>هوش شهری ماهواره‌ای برای رصد تغییرات عمان</h1>
+          <p class="lead">
+            این پروژه یک پروتوتایپ پژوهشی GeoAI است که با مقایسه تصاویر Sentinel-2 در دو بازه زمانی،
+            رشد شهری، افت پوشش گیاهی و لکه‌های تغییر را کمی‌سازی می‌کند و روی نقشه تعاملی نشان می‌دهد.
+          </p>
+          <div class="cta-row">
+            <a class="btn primary" href="urbanism.html">شروع از نگاه شهرسازی</a>
+            <a class="btn ghost" href="technology.html">معماری فنی</a>
+            <a class="btn ghost" href="guide.html">راهنمای اجرا</a>
+          </div>
+        </div>
+        <aside class="hero-card">
+          <p class="eyebrow">Snapshot</p>
+          <dl>
+            <div>
+              <dt>محدوده مطالعه</dt>
+              <dd>مسقط و کریدورهای شهری عمان</dd>
+            </div>
+            <div>
+              <dt>منبع داده</dt>
+              <dd>Sentinel-2 L2A · Planetary Computer</dd>
+            </div>
+            <div>
+              <dt>بازه زمانی نمونه</dt>
+              <dd>فصل خشک ۲۰۲۰ → ۲۰۲۵</dd>
+            </div>
+            <div>
+              <dt>خروجی‌ها</dt>
+              <dd>آمار، GeoJSON، overlay نقشه، شاخص‌های طیفی</dd>
+            </div>
+          </dl>
+        </aside>
+      </div>
+    </section>
+
+    <main class="main">
+      <section class="section">
+        <div class="metrics">
+          <div class="metric">
+            <span>لایه‌های سیستم</span>
+            <strong>Full-stack</strong>
+          </div>
+          <div class="metric">
+            <span>شاخص‌های طیفی</span>
+            <strong>NDVI / NDBI</strong>
+          </div>
+          <div class="metric">
+            <span>روش تشخیص</span>
+            <strong>Baseline + CVA</strong>
+          </div>
+          <div class="metric">
+            <span>نقشه</span>
+            <strong>Leaflet</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>مسئله پژوهش</h2>
+          <p>
+            شهرها سریع تغییر می‌کنند؛ اما پایش زمینی پرهزینه و ناقص است. تصاویر چندزمانه ماهواره‌ای
+            امکان مشاهده عینی رشد ساخته‌شده، فشار بر فضای سبز و جابه‌جایی پوشش زمین را فراهم می‌کنند.
+          </p>
+        </div>
+        <div class="grid-2">
+          <article class="panel">
+            <div class="icon">؟</div>
+            <h3>سؤال محوری</h3>
+            <p>
+              چگونه می‌توان با تصاویر ماهواره‌ای چندزمانه، تغییرات شهری را
+              <strong>شناسایی، کمی‌سازی و مکانی‌سازی</strong> کرد تا برای تحلیل شهرسازی قابل استفاده باشد؟
+            </p>
+          </article>
+          <article class="panel">
+            <div class="icon">✓</div>
+            <h3>پاسخ پروژه</h3>
+            <p>
+              یک خط لوله بازتولیدپذیر: هم‌ترازسازی تصاویر، محاسبه شاخص‌ها، تشخیص تغییر، تبدیل به پلی‌گان،
+              و ارائه آمار + نقشه در یک داشبورد تحقیقاتی.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>نقشه راه مستندات</h2>
+          <p>هر صفحه یک زاویه از پروژه را پوشش می‌دهد؛ از علم شهر تا جزئیات API.</p>
+        </div>
+        <div class="grid-3">
+          <a class="panel" href="urbanism.html">
+            <div class="icon">◇</div>
+            <h3>شهرسازی و سنجش از دور</h3>
+            <p class="muted">چرا مسقط؟ رشد شهری، پوشش گیاهی، و معنای شاخص‌ها برای برنامه‌ریزی.</p>
+          </a>
+          <a class="panel" href="technology.html">
+            <div class="icon">▣</div>
+            <h3>معماری فنی</h3>
+            <p class="muted">FastAPI، React، PostGIS، ذخیره‌سازی فایل و اجزای ماژولار.</p>
+          </a>
+          <a class="panel" href="pipeline.html">
+            <div class="icon">⟲</div>
+            <h3>خط لوله داده</h3>
+            <p class="muted">از GeoTIFF خام تا ماسک تغییر، آمار و GeoJSON.</p>
+          </a>
+          <a class="panel" href="methods.html">
+            <div class="icon">∑</div>
+            <h3>روش‌ها و شاخص‌ها</h3>
+            <p class="muted">NDVI، NDBI، SAVI، NDWI، Baseline و Change Vector Analysis.</p>
+          </a>
+          <a class="panel" href="guide.html">
+            <div class="icon">⌘</div>
+            <h3>راهنمای اجرا و API</h3>
+            <p class="muted">نصب، اجرای محلی، endpointها و نکات عملی داشبورد.</p>
+          </a>
+          <article class="panel callout info">
+            <h3>هشدار پژوهشی</h3>
+            <p class="muted">
+              این یک پروتوتایپ تحقیقاتی است. خروجی‌ها بدون اعتبارسنجی میدانی نباید مبنای تصمیم عملیاتی قرار گیرند.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>قابلیت‌های کلیدی</h2>
+        </div>
+        <div class="grid-2">
+          <div class="panel">
+            <ul>
+              <li>انتخاب محدوده مطالعه (مسقط و شهرهای عمان)</li>
+              <li>مقایسه سال‌ها و رسم AOI روی نقشه</li>
+              <li>لایه‌های ماهواره، NDVI، ماسک تغییر و مناطق</li>
+              <li>پنل آمار تعاملی با نمودار روند و دایره‌ای</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <ul>
+              <li>پیش‌پردازش ماژولار رستر</li>
+              <li>تشخیص تغییر baseline و CVA</li>
+              <li>Polygonize و امتیاز هر منطقه تغییر</li>
+              <li>Fallback فایل‌محور وقتی PostGIS در دسترس نیست</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div>GeoAI Urban Satellite Change Detection · مستندات پروتوتایپ پژوهشی</div>
+        <div>
+          <a href="guide.html">راهنمای اجرا</a>
+          ·
+          <a href="../../README.md">README</a>
+        </div>
+      </div>
+    </footer>
+    <script src="assets/nav.js"></script>
+  </body>
+</html>
