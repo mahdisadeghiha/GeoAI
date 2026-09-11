@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+title: "GeoAI Urban Intelligence"
+message: "If you use or reference this research prototype, please cite it using the metadata below."
+type: software
+authors:
+  - family-names: "Sadeghiha"
+    given-names: "Mahdi"
+    alias: "mahdisadeghiha"
+repository-code: "https://github.com/mahdisadeghiha/GeoAI"
+abstract: >-
+  A geospatial research prototype for detecting, quantifying, and mapping
+  urban growth, built-up change, and vegetation dynamics from multi-temporal
+  Sentinel-2 imagery, with a current case study focused on Muscat and Oman.
+keywords:
+  - urban planning
+  - geospatial analysis
+  - remote sensing
+  - Sentinel-2
+  - urban change detection
+  - GIS
+  - spatial analysis
+license: MIT
